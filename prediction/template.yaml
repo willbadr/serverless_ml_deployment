@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+Resources:
+  prediction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: prediction/lambda_function.lambda_handler
+      Runtime: python2.7
+      Description: ''
+      MemorySize: 1024
+      Timeout: 15
+      Role: 'arn:aws:iam::599334232150:role/SydneySummit-PredictionLambda'
+  predictionPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName:
+        'Fn::GetAtt':
+          - prediction
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        'Fn::Sub': 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/*'

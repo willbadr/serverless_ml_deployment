@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+Resources:
+  imageProcessing:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: imageProcessing/lambda_function.lambda_handler
+      Runtime: python2.7
+      Description: ''
+      MemorySize: 1024
+      Timeout: 15
+      Events:
+        LambdaMicroservice:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+      Role: 'arn:aws:iam::599334232150:role/SydneySummit-ImageProcessing-Lambda'
+  imageProcessingPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName:
+        'Fn::GetAtt':
+          - imageProcessing
+          - Arn
+      Principal: apigateway.amazonaws.com
+      SourceArn:
+        'Fn::Sub': 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/*'
