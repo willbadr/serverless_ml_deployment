@@ -8,10 +8,12 @@ import numpy as np
 import urllib
 print('Loading function')
 
+import time
+start_time = time.time()
 
 client = boto3.client('lambda')
 s3 = boto3.resource('s3')
-bucket="sagemaker-demo-sydsummit"
+bucket="sagemaker-serverless"
 
 def upload_to_s3(channel, file, file_name):
     s3 = boto3.resource('s3')
@@ -37,14 +39,18 @@ def lambda_handler(event, context):
     url = event['queryStringParameters']['url']
     urllib.urlretrieve(url,file_path)
     img = get_image(file_path)
+    print("--- %s time one ---" % (time.time() - start_time))
     payload = { "object": img.tolist() }
     with open('/tmp/img_numpy.json', 'w') as outfile:
         json.dump(payload, outfile)
     upload_to_s3('temp','/tmp/img_numpy.json','img_numpy.json')
+    print("--- %s time two ---" % (time.time() - start_time))
     result = client.invoke(
-    FunctionName='<prediction function placed here>',
+    FunctionName='arn:aws:lambda:us-west-2:625616379791:function:cloud9-prediction-prediction-1E13U9IV591XN',
     InvocationType='RequestResponse')
+    print("--- %s seconds ---" % (time.time() - start_time))
     results_dict = ast.literal_eval(json.loads(result['Payload'].read()))
+    #print(results_dict)
     prob = "{0:.2f}".format(results_dict.get('prob') * 100)
     msg = "There is %" + str(prob) + " chance that the picture is " + results_dict.get('label')[0]
     html_body = '<html><body><h2>' + msg + ' </h2><img src="' + url +  '" alt="flower" width="500" height="377"></body></html>'
