@@ -47,11 +47,12 @@ def lambda_handler(event, context):
     InvocationType='RequestResponse')
     results_dict = ast.literal_eval(json.loads(result['Payload'].read()))
     prob = "{0:.2f}".format(results_dict.get('prob') * 100)
-    msg = "There is %" + str(prob) + " chance that the picture is " + results_dict.get('label')[0]
+    label_name_list = results_dict.get('label')[0].split(" ")[1:]
+    label_name_string = ' '.join(label_name_list)
+    msg = "There is %" + str(prob) + " chance that the picture is " + label_name_string
     html_body = '<html><body><h2>' + msg + ' </h2><img src="' + url +  '" alt="flower" width="500" height="377"></body></html>'
     response = {
         'statusCode': 200,
         'body': html_body
     }
     return response
-    

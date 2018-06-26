@@ -10,8 +10,6 @@ BUCKET_NAME = 'INSERT S3 BUCKET' # replace with your bucket name
 KEY = 'temp/img_numpy.json' # replace with your object key
 s3 = boto3.resource('s3')
 s3.Bucket(BUCKET_NAME).download_file(KEY, '/tmp/img_numpy.json')
-synsets = loadCategories()
-model = loadModel("Inception-BN")
 
 def loadModel(modelname, gpu=False):
         sym, arg_params, aux_params = mx.model.load_checkpoint(modelname, 0)
@@ -46,6 +44,8 @@ def predict(img, model, categories, n):
                 topn.append((prob[i], categories[i]))
         return topn
         
+synsets = loadCategories()
+model = loadModel("Inception-BN")
 
 def lambda_handler(event, context):
     s3.Bucket(BUCKET_NAME).download_file(KEY, '/tmp/img_numpy.json')
