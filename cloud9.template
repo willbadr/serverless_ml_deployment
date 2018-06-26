@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: 2010-09-09
+Metadata:
+  'AWS::CloudFormation::Designer': {}
+Resources:
+  Cloud9Env:
+    Type: 'AWS::Cloud9::EnvironmentEC2'
+    Properties:
+      Repositories:
+        - PathComponent: /serverless-ml-deployment
+          RepositoryUrl: 'https://github.com/willbadr/serverless_ml_deployment.git'
+      Description: EC2 Cloud9 Environment for deploying ML model
+      AutomaticStopTimeMinutes: 60
+      InstanceType: t2.small
+      Name: ML deployment Environment
+  MLDeploymentRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      RoleName: MLDeploymentRole
+  RolePolicies:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: MLDeploymentPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Action:
+          - 's3:Get*'
+          - 's3:Put*'
+          - 'lambda:Invoke*'
+          - 'cloudwatch:CreateLogStream'
+          - 'cloudwatch:PutLogEvents'
+          Effect: Allow
+          Resource: '*'
+            
+      Roles:
+        - Ref: MLDeploymentRole
