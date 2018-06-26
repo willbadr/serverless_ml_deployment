@@ -15,16 +15,6 @@ Resources:
           Type: Api
           Properties:
             Path: /
-            Method: ANY
-      Role: 'arn:aws:iam::599334232150:role/SydneySummit-ImageProcessing-Lambda'
-  imageProcessingPermission:
-    Type: 'AWS::Lambda::Permission'
-    Properties:
-      Action: 'lambda:InvokeFunction'
-      FunctionName:
-        'Fn::GetAtt':
-          - imageProcessing
-          - Arn
-      Principal: apigateway.amazonaws.com
-      SourceArn:
-        'Fn::Sub': 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:*/*/*/*'
+            Method: POST
+      Role: 
+        'Fn::Sub': 'arn:aws:iam::${AWS::AccountId}:role/MLDeploymentRole'
