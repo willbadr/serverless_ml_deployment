@@ -4,7 +4,7 @@ This code is a Cloud9 Code that implements Lambda functions and API Gateway for 
 
 Here is the breakdown of the Lambda Functions:
 
-**imageProcessing: **
+**imageProcessing:**
 
 This function will process the image before and convert it to numpy array after reshaping it. The numpy representation of the image will be uploaded to S3.
 
